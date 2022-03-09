@@ -124,11 +124,11 @@ class _LineChartSample2State extends State<LineChartSample2> {
           getTitles: (value) {
             switch (value.toInt()) {
               case 1:
-                return '10k';
+                return '\$ 10k';
               case 3:
-                return '30k';
+                return '5%';
               case 5:
-                return '50k';
+                return '-5%';
             }
             return '';
           },

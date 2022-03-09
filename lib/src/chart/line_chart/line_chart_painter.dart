@@ -984,8 +984,8 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
                   RRect.fromRectAndRadius(
                     Rect.fromCenter(
                       center: Offset(backgroundX, backgroundY),
-                      width: normalTp.width * 1.7,
-                      height: normalTp.height * 1.5,
+                      width: normalTp.width + 16,
+                      height: normalTp.height + 9,
                     ),
                     const Radius.circular(90),
                   ),
@@ -997,8 +997,8 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
                   RRect.fromRectAndRadius(
                     Rect.fromCenter(
                       center: Offset(backgroundX, backgroundY),
-                      width: normalTp.width * 1.55,
-                      height: normalTp.height * 1.3,
+                      width: normalTp.width + 13,
+                      height: normalTp.height + 6,
                     ),
                     const Radius.circular(90),
                   ),
