@@ -81,11 +81,11 @@ class _LineChartSample2State extends State<LineChartSample2> {
       ),
       lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
-              showOnTopOfTheChartBoxArea: true,
-              fitInsideHorizontally: true,
-              // fitInsideVertically: true,
-              tooltipBgColor: Colors.white,
-          )),
+        showOnTopOfTheChartBoxArea: true,
+        fitInsideHorizontally: true,
+        // fitInsideVertically: true,
+        tooltipBgColor: Colors.white,
+      )),
       titlesData: FlTitlesData(
         show: true,
         rightTitles: SideTitles(showTitles: false),
@@ -114,6 +114,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
         leftTitles: SideTitles(
           showTitles: true,
           interval: 1,
+          margin: MediaQuery.of(context).size.width * -0.2,
+          reservedSize: MediaQuery.of(context).size.width * 0.2,
           getTextStyles: (context, value) => const TextStyle(
             color: Color(0xff67727d),
             fontWeight: FontWeight.bold,
@@ -130,8 +132,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
             }
             return '';
           },
-          reservedSize: 32,
-          margin: 12,
         ),
       ),
       borderData: FlBorderData(
@@ -194,7 +194,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
         show: true,
         bottomTitles: SideTitles(
           showTitles: true,
-          reservedSize: 22,
           getTextStyles: (context, value) => const TextStyle(
               color: Color(0xff68737d),
               fontWeight: FontWeight.bold,

@@ -970,18 +970,24 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
                 .calculateRotationOffset(tp.size, leftTitles.rotateAngle)
                 .dx;
 
-            /// TODO : Angga side title here
+            /// TODO : Angga left side title here
             if (span.text != null && span.text!.isNotEmpty) {
               final double backgroundX = x + tp.width / 2;
               final double backgroundY = getPixelY(axisValue, viewSize, holder);
+              final normalTp = TextPainter(
+                text: span,
+                textAlign: leftTitles.textAlign,
+                textDirection: leftTitles.textDirection,
+                textScaleFactor: holder.textScale,
+              )..layout(minWidth: 0, maxWidth: double.infinity);
               canvasWrapper.drawRRect(
                   RRect.fromRectAndRadius(
                     Rect.fromCenter(
                       center: Offset(backgroundX, backgroundY),
-                      width: tp.width * 1.25,
-                      height: tp.height * 1.3,
+                      width: normalTp.width * 1.7,
+                      height: normalTp.height * 1.5,
                     ),
-                    const Radius.circular(180),
+                    const Radius.circular(90),
                   ),
                   Paint()
                     ..color = Colors.black
@@ -991,10 +997,10 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
                   RRect.fromRectAndRadius(
                     Rect.fromCenter(
                       center: Offset(backgroundX, backgroundY),
-                      width: tp.width * 1.15,
-                      height: tp.height * 1.15,
+                      width: normalTp.width * 1.55,
+                      height: normalTp.height * 1.3,
                     ),
-                    const Radius.circular(180),
+                    const Radius.circular(90),
                   ),
                   Paint()
                     ..color = Colors.white
