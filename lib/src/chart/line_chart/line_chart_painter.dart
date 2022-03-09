@@ -352,6 +352,11 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
         }
       }
 
+      /// TODO : Angga touched dot and line here
+      if (data.lineTouchData.touchTooltipData.showOnTopOfTheChartBoxArea) {
+        lineEnd = Offset(touchedSpot.dx, 0);
+      }
+
       _touchLinePaint.color = indicatorData.indicatorBelowLine.color;
       _touchLinePaint.strokeWidth =
           indicatorData.indicatorBelowLine.strokeWidth;
@@ -630,10 +635,41 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
 
     if (barData.belowBarData.applyCutOffY) {
       canvasWrapper.saveLayer(
-          Rect.fromLTWH(0, 0, viewSize.width, viewSize.height), Paint());
+          Rect.fromLTWH(0, 0, chartViewSize.width, chartViewSize.height),
+          Paint());
     }
 
     canvasWrapper.drawPath(belowBarPath, _barAreaPaint);
+
+    /// TODO: Angga draw diagonal line
+    // final data = holder.data;
+    // final usableViewSize = getChartUsableDrawSize(viewSize, holder);
+    // Paint horizontalLinePaint = Paint();
+    // AxisChartHelper().iterateThroughAxis(
+    //   min: data.minX,
+    //   minIncluded: false,
+    //   max: data.maxX,
+    //   maxIncluded: false,
+    //   baseLine: data.baselineX,
+    //   interval: 0.5,
+    //   action: (axisValue) {
+    //     final flLineStyle = data.gridData.getDrawingVerticalLine(axisValue);
+    //     horizontalLinePaint.color = Colors.red;
+    //     horizontalLinePaint.strokeWidth = flLineStyle.strokeWidth;
+    //     horizontalLinePaint.transparentIfWidthIsZero();
+    //
+    //     final bothX = getPixelX(axisValue, usableViewSize, holder);
+    //     final x1 = bothX;
+    //     final y1 = 0 + getTopOffsetDrawSize(holder);
+    //     final x2 = bothX;
+    //     final y2 = usableViewSize.height + getTopOffsetDrawSize(holder);
+    //     canvasWrapper.drawLine(
+    //         Offset(x1, y1), Offset(x2, y2), horizontalLinePaint);
+    //   },
+    // );
+    ///
+
+    // canvasWrapper.drawPath(filledAboveBarPath, _clearBarAreaPaint);
 
     // clear the above area that get out of the bar line
     if (barData.belowBarData.applyCutOffY) {
@@ -933,6 +969,39 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
             x += Utils()
                 .calculateRotationOffset(tp.size, leftTitles.rotateAngle)
                 .dx;
+
+            /// TODO : Angga side title here
+            if (span.text != null && span.text!.isNotEmpty) {
+              final double backgroundX = x + tp.width / 2;
+              final double backgroundY = getPixelY(axisValue, viewSize, holder);
+              canvasWrapper.drawRRect(
+                  RRect.fromRectAndRadius(
+                    Rect.fromCenter(
+                      center: Offset(backgroundX, backgroundY),
+                      width: tp.width * 1.25,
+                      height: tp.height * 1.3,
+                    ),
+                    const Radius.circular(180),
+                  ),
+                  Paint()
+                    ..color = Colors.black
+                    ..style = PaintingStyle.fill);
+
+              canvasWrapper.drawRRect(
+                  RRect.fromRectAndRadius(
+                    Rect.fromCenter(
+                      center: Offset(backgroundX, backgroundY),
+                      width: tp.width * 1.15,
+                      height: tp.height * 1.15,
+                    ),
+                    const Radius.circular(180),
+                  ),
+                  Paint()
+                    ..color = Colors.white
+                    ..style = PaintingStyle.fill);
+            }
+
+            canvasWrapper.rotate(leftTitles.rotateAngle);
             canvasWrapper.drawText(tp, Offset(x, y), leftTitles.rotateAngle);
           }
         },
@@ -1351,6 +1420,22 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     }
 
     final radius = Radius.circular(tooltipData.tooltipRoundedRadius);
+
+    /// TODO : Angga tooltip background here
+    /// Rect border
+    var bRect = Rect.fromLTWH(
+      rect.left - 1,
+      rect.top - 1,
+      rect.width + 2,
+      rect.height + 2,
+    );
+
+    final roundedBorderRect = RRect.fromRectAndCorners(bRect,
+        topLeft: radius,
+        topRight: radius,
+        bottomLeft: radius,
+        bottomRight: radius);
+
     final roundedRect = RRect.fromRectAndCorners(rect,
         topLeft: radius,
         topRight: radius,
@@ -1366,13 +1451,42 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     final textRotationOffset =
         Utils().calculateRotationOffset(rect.size, rotateAngle);
 
+    final double rectCenterX = rect.left + rect.width / 2;
+    final double rectBottomY = rect.top + rect.height;
+
+    final Path trianglePath = Path()
+      ..moveTo(rectCenterX - 4, rectBottomY)
+      ..lineTo(rectCenterX - 0.5, rectBottomY + 8)
+      ..lineTo(rectCenterX + 0.5, rectBottomY + 8)
+      ..lineTo(rectCenterX + 4, rectBottomY)
+      ..close();
+
+    final Path bTrianglePath = Path()
+      ..moveTo(rectCenterX - 5, rectBottomY)
+      ..lineTo(rectCenterX - 0.5, rectBottomY + 9)
+      ..lineTo(rectCenterX + 0.5, rectBottomY + 9)
+      ..lineTo(rectCenterX + 5, rectBottomY)
+      ..close();
+
     canvasWrapper.drawRotated(
       size: rect.size,
       rotationOffset: rectRotationOffset,
       drawOffset: rectDrawOffset,
       angle: rotateAngle,
       drawCallback: () {
-        canvasWrapper.drawRRect(roundedRect, _bgTouchTooltipPaint);
+        /// Draw border
+        canvasWrapper.drawRRect(
+            roundedBorderRect, _bgTouchTooltipPaint..color = Colors.black);
+
+        /// Draw border triangle
+        canvasWrapper.drawPath(bTrianglePath, _bgTouchTooltipPaint);
+
+        /// Draw fill color
+        canvasWrapper.drawRRect(roundedRect,
+            _bgTouchTooltipPaint..color = tooltipData.tooltipBgColor);
+
+        /// Draw fill color triangle
+        canvasWrapper.drawPath(trianglePath, _bgTouchTooltipPaint..color);
       },
     );
 

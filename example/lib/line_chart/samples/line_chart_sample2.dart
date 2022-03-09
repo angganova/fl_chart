@@ -27,7 +27,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
                 borderRadius: BorderRadius.all(
                   Radius.circular(18),
                 ),
-                color: Color(0xff232d37)),
+                color: Colors.white),
             child: Padding(
               padding: const EdgeInsets.only(
                   right: 18.0, left: 12.0, top: 24, bottom: 12),
@@ -79,6 +79,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
           );
         },
       ),
+      lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+              showOnTopOfTheChartBoxArea: true,
+              fitInsideHorizontally: true,
+              // fitInsideVertically: true,
+              tooltipBgColor: Colors.white,
+          )),
       titlesData: FlTitlesData(
         show: true,
         rightTitles: SideTitles(showTitles: false),
