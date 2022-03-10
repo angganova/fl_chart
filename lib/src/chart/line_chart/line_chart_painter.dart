@@ -633,12 +633,11 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       );
     }
 
-    if (barData.belowBarData.applyCutOffY) {
-      canvasWrapper.saveLayer(
-          Rect.fromLTWH(0, 0, chartViewSize.width, chartViewSize.height),
-          Paint());
-    }
+    canvasWrapper.saveLayer(
+        Rect.fromLTWH(0, 0, chartViewSize.width, chartViewSize.height),
+        Paint());
 
+    /// Bellow bar fill color
     canvasWrapper.drawPath(belowBarPath, _barAreaPaint);
 
     /// TODO : Angga draw diagonal line here
@@ -654,8 +653,8 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       interval: data.maxX / 30,
       action: (axisValue) {
         Paint horizontalLinePaint = Paint()
-          ..color = barData.colors[0]
-          ..strokeWidth = 1
+          ..color = barData.belowBarData.spotsLine.flLineStyle.color
+          ..strokeWidth = barData.belowBarData.spotsLine.flLineStyle.strokeWidth
           ..transparentIfWidthIsZero();
 
         final bothX = getPixelX(axisValue, usableViewSize, holder);
@@ -671,13 +670,24 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       },
     );
 
-    ///
+    var spot = barData.spots.last;
+
+    /// clear the above area that get out of the bar line
+    Path clipOutsidePath = Path()
+      ..lineTo(0, 0)
+      ..lineTo(getPixelX(spot.x, chartViewSize, holder), 0)
+      ..lineTo(viewSize.width, 0)
+      ..lineTo(viewSize.width, viewSize.height)
+      ..lineTo(getPixelX(spot.x, chartViewSize, holder), viewSize.height)
+      ..lineTo(getPixelX(spot.x, chartViewSize, holder), 0)
+      ..close();
+    canvasWrapper.drawPath(clipOutsidePath, _clearBarAreaPaint);
 
     // clear the above area that get out of the bar line
-    if (barData.belowBarData.applyCutOffY) {
-      canvasWrapper.drawPath(filledAboveBarPath, _clearBarAreaPaint);
-      canvasWrapper.restore();
-    }
+    canvasWrapper.drawPath(filledAboveBarPath, _clearBarAreaPaint);
+    canvasWrapper.restore();
+
+    ///
 
     /// draw below spots line
     if (barData.belowBarData.spotsLine.show) {
