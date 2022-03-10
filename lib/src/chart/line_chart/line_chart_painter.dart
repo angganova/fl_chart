@@ -641,35 +641,38 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
 
     canvasWrapper.drawPath(belowBarPath, _barAreaPaint);
 
-    /// TODO: Angga draw diagonal line
-    // final data = holder.data;
-    // final usableViewSize = getChartUsableDrawSize(viewSize, holder);
-    // Paint horizontalLinePaint = Paint();
-    // AxisChartHelper().iterateThroughAxis(
-    //   min: data.minX,
-    //   minIncluded: false,
-    //   max: data.maxX,
-    //   maxIncluded: false,
-    //   baseLine: data.baselineX,
-    //   interval: 0.5,
-    //   action: (axisValue) {
-    //     final flLineStyle = data.gridData.getDrawingVerticalLine(axisValue);
-    //     horizontalLinePaint.color = Colors.red;
-    //     horizontalLinePaint.strokeWidth = flLineStyle.strokeWidth;
-    //     horizontalLinePaint.transparentIfWidthIsZero();
-    //
-    //     final bothX = getPixelX(axisValue, usableViewSize, holder);
-    //     final x1 = bothX;
-    //     final y1 = 0 + getTopOffsetDrawSize(holder);
-    //     final x2 = bothX;
-    //     final y2 = usableViewSize.height + getTopOffsetDrawSize(holder);
-    //     canvasWrapper.drawLine(
-    //         Offset(x1, y1), Offset(x2, y2), horizontalLinePaint);
-    //   },
-    // );
-    ///
+    /// TODO : Angga draw diagonal line
+    final data = holder.data;
+    final usableViewSize = getChartUsableDrawSize(viewSize, holder);
 
-    // canvasWrapper.drawPath(filledAboveBarPath, _clearBarAreaPaint);
+    AxisChartHelper().iterateThroughAxis(
+      min: data.minX,
+      minIncluded: false,
+      max: data.maxX * 1.25,
+      maxIncluded: false,
+      baseLine: data.baselineX,
+      interval: 0.5,
+      action: (axisValue) {
+        final flLineStyle = data.gridData.getDrawingVerticalLine(axisValue);
+        Paint horizontalLinePaint = Paint()
+          ..color = barData.colors[0]
+          ..strokeWidth = flLineStyle.strokeWidth
+          ..transparentIfWidthIsZero();
+
+        final bothX = getPixelX(axisValue, usableViewSize, holder);
+        final x1 = bothX - usableViewSize.width * 0.4;
+        final y1 = 0 + getTopOffsetDrawSize(holder);
+        final x2 = bothX;
+        final y2 = usableViewSize.height + getTopOffsetDrawSize(holder);
+        canvasWrapper.drawLine(
+          Offset(x1, y1),
+          Offset(x2, y2),
+          horizontalLinePaint,
+        );
+      },
+    );
+
+    ///
 
     // clear the above area that get out of the bar line
     if (barData.belowBarData.applyCutOffY) {
@@ -1457,6 +1460,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     final textRotationOffset =
         Utils().calculateRotationOffset(rect.size, rotateAngle);
 
+    /// Triangle path
     final double rectCenterX = rect.left + rect.width / 2;
     final double rectBottomY = rect.top + rect.height;
 

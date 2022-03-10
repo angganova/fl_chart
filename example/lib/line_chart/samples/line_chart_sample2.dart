@@ -161,6 +161,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
           ),
           belowBarData: BarAreaData(
             show: true,
+            cutOffY: 0,
+            applyCutOffY: true,
             colors:
                 gradientColors.map((color) => color.withOpacity(0.3)).toList(),
           ),
