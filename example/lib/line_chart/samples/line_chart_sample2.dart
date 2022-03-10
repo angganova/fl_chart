@@ -63,16 +63,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
     return LineChartData(
       gridData: FlGridData(
         show: true,
-        drawVerticalLine: true,
+        drawVerticalLine: false,
         horizontalInterval: 1,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
-          return FlLine(
-            color: const Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingVerticalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d),
             strokeWidth: 1,
@@ -138,9 +132,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 11,
+      maxX: 50,
       minY: 0,
-      maxY: 6,
+      maxY: 8,
       lineBarsData: [
         LineChartBarData(
           spots: const [
@@ -151,9 +145,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
             FlSpot(8, 4),
             FlSpot(9.5, 3),
             FlSpot(11, 4),
+            FlSpot(22, 5),
+            FlSpot(33, 6),
+            FlSpot(44, 7),
+            FlSpot(50, 8),
           ],
           isCurved: true,
-          colors: gradientColors,
+          colors: [Colors.black],
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: FlDotData(
@@ -163,8 +161,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             show: true,
             cutOffY: 0,
             applyCutOffY: true,
-            colors:
-                gradientColors.map((color) => color.withOpacity(0.3)).toList(),
+            colors: [Colors.indigo],
           ),
         ),
       ],

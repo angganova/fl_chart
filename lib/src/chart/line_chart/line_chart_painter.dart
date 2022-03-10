@@ -641,22 +641,21 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
 
     canvasWrapper.drawPath(belowBarPath, _barAreaPaint);
 
-    /// TODO : Angga draw diagonal line
+    /// TODO : Angga draw diagonal line here
     final data = holder.data;
     final usableViewSize = getChartUsableDrawSize(viewSize, holder);
 
     AxisChartHelper().iterateThroughAxis(
       min: data.minX,
-      minIncluded: false,
-      max: data.maxX * 1.25,
-      maxIncluded: false,
+      minIncluded: true,
+      max: data.maxX * 2,
+      maxIncluded: true,
       baseLine: data.baselineX,
-      interval: 0.5,
+      interval: data.maxX / 30,
       action: (axisValue) {
-        final flLineStyle = data.gridData.getDrawingVerticalLine(axisValue);
         Paint horizontalLinePaint = Paint()
           ..color = barData.colors[0]
-          ..strokeWidth = flLineStyle.strokeWidth
+          ..strokeWidth = 1
           ..transparentIfWidthIsZero();
 
         final bothX = getPixelX(axisValue, usableViewSize, holder);
