@@ -1015,7 +1015,9 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
                     const Radius.circular(90),
                   ),
                   Paint()
-                    ..color = Colors.white
+                    ..color = holder.data.backgroundColor == Colors.transparent
+                        ? Colors.white
+                        : holder.data.backgroundColor
                     ..style = PaintingStyle.fill);
             }
 
