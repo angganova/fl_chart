@@ -645,9 +645,9 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     final usableViewSize = getChartUsableDrawSize(viewSize, holder);
 
     AxisChartHelper().iterateThroughAxis(
-      min: 0,
-      max: data.lineBarsData.first.spots.last.x * 2,
+      min: data.minX,
       minIncluded: true,
+      max: data.maxX * 2,
       maxIncluded: true,
       baseLine: data.baselineX,
       interval: data.maxX / 30,
