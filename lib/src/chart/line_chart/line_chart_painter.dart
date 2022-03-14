@@ -654,11 +654,11 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       action: (axisValue) {
         Paint horizontalLinePaint = Paint()
           ..color = barData.belowBarData.spotsLine.flLineStyle.color
-          ..strokeWidth = barData.belowBarData.spotsLine.flLineStyle.strokeWidth
+          ..strokeWidth = 0.5
           ..transparentIfWidthIsZero();
 
         final bothX = getPixelX(axisValue, usableViewSize, holder);
-        final x1 = bothX - usableViewSize.width * 0.4;
+        final x1 = bothX - usableViewSize.width * 0.8;
         final y1 = 0 + getTopOffsetDrawSize(holder);
         final x2 = bothX;
         final y2 = usableViewSize.height + getTopOffsetDrawSize(holder);
