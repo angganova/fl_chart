@@ -528,6 +528,12 @@ class BarAreaData with EquatableMixin {
   /// holds data for drawing a line from each spot the the bottom, or top of the chart
   final BarAreaSpotsLine spotsLine;
 
+  /// cut the drawing below or above area to this x value
+  final double cutOffX;
+
+  /// determines should or shouldn't apply cutOffX
+  final bool applyCutOffX;
+
   /// cut the drawing below or above area to this y value
   final double cutOffY;
 
@@ -555,6 +561,8 @@ class BarAreaData with EquatableMixin {
     Offset? gradientTo,
     List<double>? gradientColorStops,
     BarAreaSpotsLine? spotsLine,
+    double? cutOffX,
+    bool? applyCutOffX,
     double? cutOffY,
     bool? applyCutOffY,
   })  : show = show ?? false,
@@ -563,9 +571,12 @@ class BarAreaData with EquatableMixin {
         gradientTo = gradientTo ?? const Offset(1, 0),
         gradientColorStops = gradientColorStops,
         spotsLine = spotsLine ?? BarAreaSpotsLine(),
+        cutOffX = cutOffX ?? 0,
+        applyCutOffX = applyCutOffX ?? false,
         cutOffY = cutOffY ?? 0,
         applyCutOffY = applyCutOffY ?? false,
-        assert(applyCutOffY == true ? cutOffY != null : true);
+        assert(applyCutOffY == true ? cutOffY != null : true),
+        assert(applyCutOffX == true ? cutOffX != null : true);
 
   /// Lerps a [BarAreaData] based on [t] value, check [Tween.lerp].
   static BarAreaData lerp(BarAreaData a, BarAreaData b, double t) {
@@ -577,6 +588,8 @@ class BarAreaData with EquatableMixin {
       colors: lerpColorList(a.colors, b.colors, t),
       gradientColorStops:
           lerpDoubleList(a.gradientColorStops, b.gradientColorStops, t),
+      cutOffX: lerpDouble(a.cutOffX, b.cutOffX, t),
+      applyCutOffX: b.applyCutOffX,
       cutOffY: lerpDouble(a.cutOffY, b.cutOffY, t),
       applyCutOffY: b.applyCutOffY,
     );
@@ -591,6 +604,8 @@ class BarAreaData with EquatableMixin {
         gradientTo,
         gradientColorStops,
         spotsLine,
+        cutOffX,
+        applyCutOffX,
         cutOffY,
         applyCutOffY,
       ];
@@ -673,6 +688,9 @@ class BarAreaSpotsLine with EquatableMixin {
   final CheckToShowSpotLine checkToShowSpotLine;
 
   /// Determines to inherit the cutOff properties from its parent [BarAreaData]
+  final bool applyCutOffX;
+
+  /// Determines to inherit the cutOff properties from its parent [BarAreaData]
   final bool applyCutOffY;
 
   /// If [show] is true, [LineChart] draws some lines on above or below the spots,
@@ -682,10 +700,12 @@ class BarAreaSpotsLine with EquatableMixin {
     bool? show,
     FlLine? flLineStyle,
     CheckToShowSpotLine? checkToShowSpotLine,
+    bool? applyCutOffX,
     bool? applyCutOffY,
   })  : show = show ?? false,
         flLineStyle = flLineStyle ?? FlLine(),
         checkToShowSpotLine = checkToShowSpotLine ?? showAllSpotsBelowLine,
+        applyCutOffX = applyCutOffX ?? true,
         applyCutOffY = applyCutOffY ?? true;
 
   /// Lerps a [BarAreaSpotsLine] based on [t] value, check [Tween.lerp].
@@ -695,6 +715,7 @@ class BarAreaSpotsLine with EquatableMixin {
       show: b.show,
       checkToShowSpotLine: b.checkToShowSpotLine,
       flLineStyle: FlLine.lerp(a.flLineStyle, b.flLineStyle, t),
+      applyCutOffX: b.applyCutOffX,
       applyCutOffY: b.applyCutOffY,
     );
   }
@@ -705,6 +726,7 @@ class BarAreaSpotsLine with EquatableMixin {
         show,
         flLineStyle,
         checkToShowSpotLine,
+        applyCutOffX,
         applyCutOffY,
       ];
 }

@@ -514,6 +514,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
   }
 
   /// it generates below area path using a copy of [barPath],
+  /// if cutOffX is provided by the [BarAreaData], it cut the area to the provided cutOffX value,
   /// if cutOffY is provided by the [BarAreaData], it cut the area to the provided cutOffY value,
   /// if [fillCompletely] is true, the cutOffY will be ignored,
   /// and a completely filled path will return,
@@ -526,17 +527,30 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     final chartViewSize = getChartUsableDrawSize(viewSize, holder);
 
     /// Line To Bottom Right
-    var x = getPixelX(barSpots[barSpots.length - 1].x, chartViewSize, holder);
+    double x;
     double y;
+
+    if (!fillCompletely && barData.belowBarData.applyCutOffX) {
+      x = getPixelX(barData.belowBarData.cutOffX, chartViewSize, holder);
+    } else {
+      x = getPixelX(barSpots[barSpots.length - 1].x, chartViewSize, holder);
+    }
+
     if (!fillCompletely && barData.belowBarData.applyCutOffY) {
       y = getPixelY(barData.belowBarData.cutOffY, chartViewSize, holder);
     } else {
       y = chartViewSize.height + getTopOffsetDrawSize(holder);
     }
+
     belowBarPath.lineTo(x, y);
 
     /// Line To Bottom Left
-    x = getPixelX(barSpots[0].x, chartViewSize, holder);
+    if (!fillCompletely && barData.belowBarData.applyCutOffX) {
+      x = getPixelX(0, chartViewSize, holder);
+    } else {
+      x = getPixelX(barSpots[0].x, chartViewSize, holder);
+    }
+
     if (!fillCompletely && barData.belowBarData.applyCutOffY) {
       y = getPixelY(barData.belowBarData.cutOffY, chartViewSize, holder);
     } else {
@@ -566,8 +580,15 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     final chartViewSize = getChartUsableDrawSize(viewSize, holder);
 
     /// Line To Top Right
-    var x = getPixelX(barSpots[barSpots.length - 1].x, chartViewSize, holder);
+    double x;
     double y;
+
+    if (!fillCompletely && barData.aboveBarData.applyCutOffX) {
+      x = getPixelX(chartViewSize.width, chartViewSize, holder);
+    } else {
+      x = getPixelX(barSpots[barSpots.length - 1].x, chartViewSize, holder);
+    }
+
     if (!fillCompletely && barData.aboveBarData.applyCutOffY) {
       y = getPixelY(barData.aboveBarData.cutOffY, chartViewSize, holder);
     } else {
@@ -576,7 +597,12 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     aboveBarPath.lineTo(x, y);
 
     /// Line To Top Left
-    x = getPixelX(barSpots[0].x, chartViewSize, holder);
+    if (!fillCompletely && barData.aboveBarData.applyCutOffX) {
+      x = getPixelX(barData.aboveBarData.cutOffX, chartViewSize, holder);
+    } else {
+      x = getPixelX(barSpots[0].x, chartViewSize, holder);
+    }
+
     if (!fillCompletely && barData.aboveBarData.applyCutOffY) {
       y = getPixelY(barData.aboveBarData.cutOffY, chartViewSize, holder);
     } else {
@@ -585,7 +611,13 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     aboveBarPath.lineTo(x, y);
 
     /// Line To Bottom Left
-    x = getPixelX(barSpots[0].x, chartViewSize, holder);
+
+    if (!fillCompletely && barData.aboveBarData.applyCutOffX) {
+      x = getPixelX(barData.aboveBarData.cutOffX, chartViewSize, holder);
+    } else {
+      x = getPixelX(barSpots[0].x, chartViewSize, holder);
+    }
+
     y = getPixelY(barSpots[0].y, chartViewSize, holder);
     aboveBarPath.lineTo(x, y);
     aboveBarPath.close();
@@ -637,8 +669,41 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
         Rect.fromLTWH(0, 0, chartViewSize.width, chartViewSize.height),
         Paint());
 
+    /// TODO : Angga bellow bar fill here
     /// Bellow bar fill color
-    canvasWrapper.drawPath(belowBarPath, _barAreaPaint);
+
+    Path clipOutsidePath = Path();
+    if (barData.belowBarData.applyCutOffX) {
+      double cutOffX = barData.belowBarData.cutOffX;
+      clipOutsidePath = clipOutsidePath
+        ..lineTo(0, 0)
+        ..lineTo(getPixelX(cutOffX, chartViewSize, holder), 0)
+        ..lineTo(viewSize.width, 0)
+        ..lineTo(viewSize.width, viewSize.height)
+        ..lineTo(getPixelX(cutOffX, chartViewSize, holder), viewSize.height)
+        ..lineTo(getPixelX(cutOffX, chartViewSize, holder), 0)
+        ..close();
+    } else {
+      var spot = barData.spots.last;
+      clipOutsidePath
+        ..lineTo(0, 0)
+        ..lineTo(getPixelX(spot.x, chartViewSize, holder), 0)
+        ..lineTo(viewSize.width, 0)
+        ..lineTo(viewSize.width, viewSize.height)
+        ..lineTo(getPixelX(spot.x, chartViewSize, holder), viewSize.height)
+        ..lineTo(getPixelX(spot.x, chartViewSize, holder), 0)
+        ..close();
+    }
+
+    /// Draw fill color
+    if (barData.belowBarData.applyCutOffX) {
+      canvasWrapper.drawPath(
+          Path.combine(
+              PathOperation.reverseDifference, clipOutsidePath, belowBarPath),
+          _barAreaPaint);
+    } else {
+      canvasWrapper.drawPath(belowBarPath, _barAreaPaint);
+    }
 
     /// TODO : Angga draw diagonal line here
     final data = holder.data;
@@ -670,20 +735,10 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       },
     );
 
-    var spot = barData.spots.last;
-
-    /// clear the above area that get out of the bar line
-    Path clipOutsidePath = Path()
-      ..lineTo(0, 0)
-      ..lineTo(getPixelX(spot.x, chartViewSize, holder), 0)
-      ..lineTo(viewSize.width, 0)
-      ..lineTo(viewSize.width, viewSize.height)
-      ..lineTo(getPixelX(spot.x, chartViewSize, holder), viewSize.height)
-      ..lineTo(getPixelX(spot.x, chartViewSize, holder), 0)
-      ..close();
+    /// clear diagonal line inside bar that get out of the bar line
     canvasWrapper.drawPath(clipOutsidePath, _clearBarAreaPaint);
 
-    // clear the above area that get out of the bar line
+    /// clear diagonal line outside bar that get out of the bar line
     canvasWrapper.drawPath(filledAboveBarPath, _clearBarAreaPaint);
     canvasWrapper.restore();
 
@@ -702,19 +757,26 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
               getTopOffsetDrawSize(holder);
           Offset to;
 
-          // Check applyCutOffY
+          double x;
+          double y;
+
+          /// Check applyCutOffX
+          if (barData.belowBarData.spotsLine.applyCutOffX &&
+              barData.belowBarData.applyCutOffX) {
+            x = getPixelY(barData.belowBarData.cutOffX, chartViewSize, holder);
+          } else {
+            x = viewSize.width;
+          }
+
+          /// Check applyCutOffY
           if (barData.belowBarData.spotsLine.applyCutOffY &&
               barData.belowBarData.applyCutOffY) {
-            to = Offset(
-              getPixelX(spot.x, chartViewSize, holder),
-              getPixelY(barData.belowBarData.cutOffY, chartViewSize, holder),
-            );
+            y = getPixelY(barData.belowBarData.cutOffY, chartViewSize, holder);
           } else {
-            to = Offset(
-              getPixelX(spot.x, chartViewSize, holder),
-              viewSize.height - bottomPadding,
-            );
+            y = viewSize.height - bottomPadding;
           }
+
+          to = Offset(x, y);
 
           _barAreaLinesPaint.color =
               barData.belowBarData.spotsLine.flLineStyle.color;
@@ -769,7 +831,8 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       );
     }
 
-    if (barData.aboveBarData.applyCutOffY) {
+    if (barData.aboveBarData.applyCutOffX ||
+        barData.aboveBarData.applyCutOffY) {
       canvasWrapper.saveLayer(
           Rect.fromLTWH(0, 0, viewSize.width, viewSize.height), Paint());
     }
@@ -777,7 +840,8 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     canvasWrapper.drawPath(aboveBarPath, _barAreaPaint);
 
     // clear the above area that get out of the bar line
-    if (barData.aboveBarData.applyCutOffY) {
+    if (barData.aboveBarData.applyCutOffX ||
+        barData.aboveBarData.applyCutOffY) {
       canvasWrapper.drawPath(filledBelowBarPath, _clearBarAreaPaint);
       canvasWrapper.restore();
     }

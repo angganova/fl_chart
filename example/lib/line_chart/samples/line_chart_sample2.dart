@@ -24,19 +24,17 @@ class _LineChartSample2State extends State<LineChartSample2> {
     FlSpot(47, 7),
     FlSpot(50, 8),
   ];
-  List<FlSpot> _scrubberChartData = [];
+
   List<Color> gradientColors = [
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
   ];
 
-  double? _chartTouchedIndex;
-  bool scrubberState = false;
+  double? _chartTouchedX;
   bool showAvg = false;
 
   @override
   void initState() {
-    _scrubberChartData = mainData.toList();
     super.initState();
   }
 
@@ -86,13 +84,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
             showOnTopOfTheChartBoxArea: true,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               return touchedSpots.map((LineBarSpot e) {
-                if (e.bar.show && e.bar.belowBarData.show) {
-                  final String title = e.y.toString();
-                  return LineTooltipItem(title,
-                      const TextStyle(fontSize: 16, color: Colors.black));
-                } else {
-                  return null;
-                }
+                final String title = e.y.toString();
+                return LineTooltipItem(
+                    title, const TextStyle(fontSize: 16, color: Colors.black));
               }).toList();
             },
             //   showOnTopOfTheChartBoxArea: true,
@@ -100,29 +94,20 @@ class _LineChartSample2State extends State<LineChartSample2> {
           getTouchedSpotIndicator:
               (LineChartBarData barData, List<int> spotIndexes) {
             return spotIndexes.map((int index) {
-              bool show = false;
-
-              /// If enable scrubber, depends on the chart base line
-              /// where the bellow bar data is not show
-              show = !barData.belowBarData.show;
-
-              if (show) {
-                _chartTouchedIndex = index.toDouble();
-              }
-
               return TouchedSpotIndicatorData(
-                FlLine(color: show ? Colors.black : Colors.transparent),
+                FlLine(color: Colors.black, strokeWidth: 1),
                 FlDotData(
-                  show: show,
-                  getDotPainter: (FlSpot spot, double percent,
-                          LineChartBarData barData, int index) =>
-                      FlDotCirclePainter(
-                    radius: 6,
-                    color: Colors.black,
-                    strokeWidth: 2,
-                    strokeColor: Colors.black,
-                  ),
-                ),
+                    show: true,
+                    getDotPainter: (FlSpot spot, double percent,
+                        LineChartBarData barData, int index) {
+                      _chartTouchedX = spot.x;
+                      return FlDotCirclePainter(
+                        radius: 6,
+                        color: Colors.black,
+                        strokeWidth: 2,
+                        strokeColor: Colors.black,
+                      );
+                    }),
               );
             }).toList();
           },
@@ -167,30 +152,42 @@ class _LineChartSample2State extends State<LineChartSample2> {
           barWidth: 2,
           isStrokeCapRound: true,
           dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
-        ),
-        LineChartBarData(
-          spots: _scrubberChartData,
-          isCurved: true,
-          colors: [Colors.transparent],
-          barWidth: 4,
-          curveSmoothness: 0.1,
-          isStrokeCapRound: true,
-          dotData: FlDotData(show: false),
           belowBarData: BarAreaData(
               show: true,
+              applyCutOffX: (_chartTouchedX ?? 0) > 0,
+              cutOffX: (_chartTouchedX ?? mainData.last.x),
               colors: [Colors.indigo],
               spotsLine: BarAreaSpotsLine(
                   show: false,
                   flLineStyle: FlLine(strokeWidth: 2),
                   applyCutOffY: false)),
-        )
+        ),
+        // LineChartBarData(
+        //   spots: _scrubberChartData,
+        //   isCurved: true,
+        //   colors: [Colors.transparent],
+        //   barWidth: 4,
+        //   curveSmoothness: 0.1,
+        //   isStrokeCapRound: true,
+        //   dotData: FlDotData(show: false),
+        //   belowBarData: BarAreaData(
+        //       show: true,
+        //       // applyCutOffX: true,
+        //       // cutOffX: 5,
+        //       cutOffY: (_chartTouchedIndex ?? 0) % 2,
+        //       applyCutOffY: true,
+        //       colors: [Colors.indigo],
+        //       spotsLine: BarAreaSpotsLine(
+        //           show: false,
+        //           flLineStyle: FlLine(strokeWidth: 2),
+        //           applyCutOffY: false)),
+        // )
       ],
     );
   }
 
   void _ctaChartTouchEvent(FlTouchEvent event) {
-    if (_chartTouchedIndex != null) {
+    if (_chartTouchedX != null) {
       if (event is FlLongPressStart ||
           event is FlPanStartEvent ||
           event is FlPanUpdateEvent ||
@@ -203,25 +200,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   void _enableScrubber() {
-    try {
-      _scrubberChartData = mainData.toList();
-      _scrubberChartData.removeRange(
-        ((_chartTouchedIndex ?? 0) + 1).toInt(),
-        _scrubberChartData.length,
-      );
-      setState(() {
-        scrubberState = true;
-      });
-    } on Exception catch (_) {
-      return;
-    }
+    setState(() {});
   }
 
   void _disableScrubber() {
-    _scrubberChartData = mainData.toList();
-    _chartTouchedIndex = null;
     setState(() {
-      scrubberState = false;
+      _chartTouchedX = null;
     });
   }
 }
