@@ -540,6 +540,9 @@ class BarAreaData with EquatableMixin {
   /// determines should or shouldn't apply cutOffY
   final bool applyCutOffY;
 
+  /// Add diagonal line ill
+  final double diagonalLine;
+
   /// if [show] is true, [LineChart] fills above and below area of each line
   /// with a color or gradient.
   ///
@@ -565,6 +568,7 @@ class BarAreaData with EquatableMixin {
     bool? applyCutOffX,
     double? cutOffY,
     bool? applyCutOffY,
+    double? diagonalLine,
   })  : show = show ?? false,
         colors = colors ?? [Colors.blueGrey.withOpacity(0.5)],
         gradientFrom = gradientFrom ?? const Offset(0, 0),
@@ -575,6 +579,7 @@ class BarAreaData with EquatableMixin {
         applyCutOffX = applyCutOffX ?? false,
         cutOffY = cutOffY ?? 0,
         applyCutOffY = applyCutOffY ?? false,
+        diagonalLine = diagonalLine ?? 0,
         assert(applyCutOffY == true ? cutOffY != null : true),
         assert(applyCutOffX == true ? cutOffX != null : true);
 

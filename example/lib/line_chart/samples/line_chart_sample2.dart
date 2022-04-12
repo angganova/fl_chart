@@ -157,31 +157,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
               applyCutOffX: (_chartTouchedX ?? 0) > 0,
               cutOffX: (_chartTouchedX ?? mainData.last.x),
               colors: [Colors.indigo],
+              diagonalLine: MediaQuery.of(context).size.width/10,
               spotsLine: BarAreaSpotsLine(
                   show: false,
                   flLineStyle: FlLine(strokeWidth: 2),
                   applyCutOffY: false)),
         ),
-        // LineChartBarData(
-        //   spots: _scrubberChartData,
-        //   isCurved: true,
-        //   colors: [Colors.transparent],
-        //   barWidth: 4,
-        //   curveSmoothness: 0.1,
-        //   isStrokeCapRound: true,
-        //   dotData: FlDotData(show: false),
-        //   belowBarData: BarAreaData(
-        //       show: true,
-        //       // applyCutOffX: true,
-        //       // cutOffX: 5,
-        //       cutOffY: (_chartTouchedIndex ?? 0) % 2,
-        //       applyCutOffY: true,
-        //       colors: [Colors.indigo],
-        //       spotsLine: BarAreaSpotsLine(
-        //           show: false,
-        //           flLineStyle: FlLine(strokeWidth: 2),
-        //           applyCutOffY: false)),
-        // )
       ],
     );
   }

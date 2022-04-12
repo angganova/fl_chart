@@ -706,34 +706,36 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     }
 
     /// TODO : Angga draw diagonal line here
-    final data = holder.data;
-    final usableViewSize = getChartUsableDrawSize(viewSize, holder);
+    if (barData.belowBarData.diagonalLine > 0) {
+      final data = holder.data;
+      final usableViewSize = getChartUsableDrawSize(viewSize, holder);
 
-    AxisChartHelper().iterateThroughAxis(
-      min: data.minX,
-      minIncluded: true,
-      max: data.maxX * 2,
-      maxIncluded: true,
-      baseLine: data.baselineX,
-      interval: data.maxX / 30,
-      action: (axisValue) {
-        Paint horizontalLinePaint = Paint()
-          ..color = barData.belowBarData.spotsLine.flLineStyle.color
-          ..strokeWidth = 0.5
-          ..transparentIfWidthIsZero();
+      AxisChartHelper().iterateThroughAxis(
+        min: data.minX,
+        minIncluded: true,
+        max: data.maxX * 2,
+        maxIncluded: true,
+        baseLine: data.baselineX,
+        interval: data.maxX / barData.belowBarData.diagonalLine,
+        action: (axisValue) {
+          Paint horizontalLinePaint = Paint()
+            ..color = barData.belowBarData.spotsLine.flLineStyle.color
+            ..strokeWidth = 0.5
+            ..transparentIfWidthIsZero();
 
-        final bothX = getPixelX(axisValue, usableViewSize, holder);
-        final x1 = bothX - usableViewSize.width * 0.8;
-        final y1 = 0 + getTopOffsetDrawSize(holder);
-        final x2 = bothX;
-        final y2 = usableViewSize.height + getTopOffsetDrawSize(holder);
-        canvasWrapper.drawLine(
-          Offset(x1, y1),
-          Offset(x2, y2),
-          horizontalLinePaint,
-        );
-      },
-    );
+          final bothX = getPixelX(axisValue, usableViewSize, holder);
+          final x1 = bothX - usableViewSize.width * 0.8;
+          final y1 = 0 + getTopOffsetDrawSize(holder);
+          final x2 = bothX;
+          final y2 = usableViewSize.height + getTopOffsetDrawSize(holder);
+          canvasWrapper.drawLine(
+            Offset(x1, y1),
+            Offset(x2, y2),
+            horizontalLinePaint,
+          );
+        },
+      );
+    }
 
     /// clear diagonal line inside bar that get out of the bar line
     canvasWrapper.drawPath(clipOutsidePath, _clearBarAreaPaint);
